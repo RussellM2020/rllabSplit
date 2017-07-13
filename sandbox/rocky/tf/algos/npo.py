@@ -63,7 +63,7 @@ class NPO(BatchPolopt):
             valid_var = tf.placeholder(tf.float32, shape=[None, None], name="valid")
         else:
             valid_var = None
-
+        
         dist_info_vars = self.policy.dist_info_sym(obs_var, state_info_vars)
         kl = dist.kl_sym(old_dist_info_vars, dist_info_vars)
         lr = dist.likelihood_ratio_sym(action_var, old_dist_info_vars, dist_info_vars)
@@ -93,6 +93,7 @@ class NPO(BatchPolopt):
 
     @overrides
     def optimize_policy(self, itr, samples_data):
+       
         all_input_values = tuple(ext.extract(
             samples_data,
             "observations", "actions", "advantages"
@@ -100,6 +101,7 @@ class NPO(BatchPolopt):
         agent_infos = samples_data["agent_infos"]
         state_info_list = [agent_infos[k] for k in self.policy.state_info_keys]
         dist_info_list = [agent_infos[k] for k in self.policy.distribution.dist_info_keys]
+        
         all_input_values += tuple(state_info_list) + tuple(dist_info_list)
         if self.policy.recurrent:
             all_input_values += (samples_data["valids"],)

@@ -20,7 +20,9 @@ class PerlmutterHvp(object):
     def update_opt(self, f, target, inputs, reg_coeff):
         self.target = target
         self.reg_coeff = reg_coeff
+
         params = target.get_params(trainable=True)
+        #print(params)
 
         constraint_grads = tf.gradients(f, xs=params)
         for idx, (grad, param) in enumerate(zip(constraint_grads, params)):
@@ -51,6 +53,7 @@ class PerlmutterHvp(object):
 
     def build_eval(self, inputs):
         def eval(x):
+            
             xs = tuple(self.target.flat_to_params(x, trainable=True))
             ret = sliced_fun(self.opt_fun["f_Hx_plain"], self._num_slices)(inputs, xs) + self.reg_coeff * x
             return ret
@@ -183,8 +186,9 @@ class ConjugateGradientOptimizer(Serializable):
             extra_inputs = tuple(extra_inputs)
 
         constraint_term, constraint_value = leq_constraint
-
+        
         params = target.get_params(trainable=True)
+        
         grads = tf.gradients(loss, xs=params)
         for idx, (grad, param) in enumerate(zip(grads, params)):
             if grad is None:
@@ -262,9 +266,12 @@ class ConjugateGradientOptimizer(Serializable):
         logger.log("gradient computed")
 
         logger.log("computing descent direction")
+        print("a")
         Hx = self._hvp_approach.build_eval(subsample_inputs + extra_inputs)
+        print("b")
 
         descent_direction = krylov.cg(Hx, flat_g, cg_iters=self._cg_iters)
+        print("c")
 
         initial_step_size = np.sqrt(
             2.0 * self._max_constraint_val * (1. / (descent_direction.dot(Hx(descent_direction)) + 1e-8))

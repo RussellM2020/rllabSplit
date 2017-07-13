@@ -1,10 +1,16 @@
+import sys
+sys.path.append('/home/russellm/Research/Results/Split')
+from fileHandling import store
+
+
+
 import time
 from rllab.algos.base import RLAlgorithm
 import rllab.misc.logger as logger
 from sandbox.rocky.tf.policies.base import Policy
 import tensorflow as tf
 from sandbox.rocky.tf.samplers.batch_sampler import BatchSampler
-from sandbox.rocky.tf.samplers.vectorized_sampler import VectorizedSampler
+from sandbox.rocky.tf.samplers.vectorized_sampler_truncRewards import VectorizedSampler
 from rllab.sampler.utils import rollout
 
 
@@ -107,13 +113,19 @@ class BatchPolopt(RLAlgorithm):
         sess.run(tf.global_variables_initializer())
         self.start_worker()
         start_time = time.time()
+        AvgDisReturn = []
+        AvgReturn = []
         for itr in range(self.start_itr, self.n_itr):
             itr_start_time = time.time()
             with logger.prefix('itr #%d | ' % itr):
                 logger.log("Obtaining samples...")
                 paths = self.obtain_samples(itr)
+                #print(paths)
                 logger.log("Processing samples...")
                 samples_data = self.process_samples(itr, paths)
+                # for key in samples_data:
+                #     print(key)
+                # print(samples_data["rewards"])
                 logger.log("Logging diagnostics...")
                 self.log_diagnostics(paths)
                 logger.log("Optimizing policy...")
@@ -125,16 +137,28 @@ class BatchPolopt(RLAlgorithm):
                 logger.save_itr_params(itr, params)
                 logger.log("Saved")
                 logger.record_tabular('Time', time.time() - start_time)
+                
                 logger.record_tabular('ItrTime', time.time() - itr_start_time)
+                AvgDisReturn.append(float(dict(logger._tabular)["AverageDiscountedReturn"]))
+                AvgReturn.append(float(dict(logger._tabular)["AverageReturn"]))
+                # for key in dict(logger._tabular):
+                #     print(key)
                 logger.dump_tabular(with_prefix=False)
                 if self.plot:
                     rollout(self.env, self.policy, animated=True, max_path_length=self.max_path_length)
                     if self.pause_for_plot:
                         input("Plotting evaluation run: Press Enter to "
                               "continue...")
+
+
+                store("AvgDisReturn.dat", AvgDisReturn)
+                store("AvgReturn.dat", AvgReturn)
+    
         self.shutdown_worker()
         if created_session:
             sess.close()
+
+        
 
     def log_diagnostics(self, paths):
         self.env.log_diagnostics(paths)

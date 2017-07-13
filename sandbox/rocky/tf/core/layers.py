@@ -1761,11 +1761,14 @@ def get_output(layer_or_layers, inputs=None, **kwargs):
                        for layer in all_layers
                        if isinstance(layer, InputLayer) and
                        layer not in treat_as_input)
+    #print(all_outputs)
+    #print(len(all_outputs))
     # update layer-to-expression mapping from given input(s), if any
     if isinstance(inputs, dict):
         all_outputs.update((layer, tf.convert_to_tensor(expr))
                            for layer, expr in list(inputs.items()))
     elif inputs is not None:
+        #print(inputs)
         if len(all_outputs) > 1:
             raise ValueError("get_output() was called with a single input "
                              "expression on a network with multiple input "

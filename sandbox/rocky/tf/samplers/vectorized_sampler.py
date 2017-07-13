@@ -38,6 +38,7 @@ class VectorizedSampler(BaseSampler):
 
     def obtain_samples(self, itr):
         logger.log("Obtaining samples for iteration %d..." % itr)
+        trialObs = np.zeros(shape = (1,5292), dtype = np.float32)
         paths = []
         n_samples = 0
         obses = self.vec_env.reset()
@@ -50,6 +51,7 @@ class VectorizedSampler(BaseSampler):
         process_time = 0
 
         policy = self.algo.policy
+        
         import time
         while n_samples < self.algo.batch_size:
             t = time.time()

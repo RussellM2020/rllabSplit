@@ -61,6 +61,7 @@ class PenaltyLbfgsOptimizer(Serializable):
 
         def get_opt_output():
             params = target.get_params(trainable=True)
+           
             grads = tf.gradients(penalized_loss, params)
             for idx, (grad, param) in enumerate(zip(grads, params)):
                 if grad is None:

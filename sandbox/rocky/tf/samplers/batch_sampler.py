@@ -34,6 +34,8 @@ class BatchSampler(BaseSampler):
             max_path_length=self.algo.max_path_length,
             scope=self.algo.scope,
         )
+        print("AAAAAAAAAAAAAAAAAa")
+        #print(paths)
         if self.algo.whole_paths:
             return paths
         else:

@@ -1,7 +1,9 @@
 
 
 
-from sandbox.rocky.tf.core.parameterized import Parameterized
+from sandbox.rocky.tf.core.parameterized_split import Parameterized
+#from sandbox.rocky.tf.core.parameterized import Parameterized
+
 
 
 class Policy(Parameterized):

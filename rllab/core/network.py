@@ -14,6 +14,8 @@ import numpy as np
 
 
 def wrapped_conv(*args, **kwargs):
+
+
     copy = dict(kwargs)
     copy.pop("image_shape", None)
     copy.pop("filter_shape", None)
@@ -275,7 +277,7 @@ class ConvNetwork(object):
                  conv_filters, conv_filter_sizes, conv_strides, conv_pads,
                  hidden_W_init=LI.GlorotUniform(), hidden_b_init=LI.Constant(0.),
                  output_W_init=LI.GlorotUniform(), output_b_init=LI.Constant(0.),
-                 # conv_W_init=LI.GlorotUniform(), conv_b_init=LI.Constant(0.),
+                 conv_W_init=LI.GlorotUniform(), conv_b_init=LI.Constant(0.),
                  hidden_nonlinearity=LN.rectify,
                  output_nonlinearity=LN.softmax,
                  name=None, input_var=None):

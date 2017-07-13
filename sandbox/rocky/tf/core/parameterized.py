@@ -32,11 +32,14 @@ class Parameterized(object):
     def get_params(self, **tags):
         """
         Get the list of parameters, filtered by the provided tags.
-        Some common tags include 'regularizable' and 'trainable'
-        """
+        Some common tags include 'regularizable' and 'trainable' """
+        
+        
         tag_tuple = tuple(sorted(list(tags.items()), key=lambda x: x[0]))
         if tag_tuple not in self._cached_params:
             self._cached_params[tag_tuple] = self.get_params_internal(**tags)
+
+          
         return self._cached_params[tag_tuple]
 
     def get_param_dtypes(self, **tags):
@@ -82,6 +85,8 @@ class Parameterized(object):
         tf.get_default_session().run(ops, feed_dict=feed_dict)
 
     def flat_to_params(self, flattened_params, **tags):
+        import numpy as np
+        print(np.shape(flattened_params))
         return unflatten_tensors(flattened_params, self.get_param_shapes(**tags))
 
     def __getstate__(self):
